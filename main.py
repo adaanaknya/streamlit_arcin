@@ -1,34 +1,29 @@
-import main
-import connection
 import streamlit as st
+import pandas as pd
+import db
+ 
 
+def main():
+    st.title("Welcome!")
 
-def start():
-    pilih = int(input("Input : "))
-    if pilih == 1:
-        many_rows = int(input("Berapa Data yang ingin di input "))
-        i = 1
-        while i <= many_rows:
-            name = input("input nama barang = ")
-            stock = int(input("input stock barang = "))
-            price = int(input("input harga beli (dalam rupiah)= "))
-            try:
-                connection.insert_barang(name,stock,price)
-            except:
-                print("Data sudah ada ")
-                break
-                
-            i = i+1
-        print("data berhasil di input")    
+    st.write("Klik tombol di sidebar kiri untuk berpindah halaman.")
+
+    # conn = st.connection("my_sql_connection", type="sql")
+    # print(conn)
+    # df = conn.query("SELECT * FROM storage",ttl=600)
+    # st.write(pd.DataFrame(df)) 
+    # st.write(df)
+    
+    if db.connection:
+            st.write("Connected")
+    else:
+            st.write("Not Connected")
         
-    elif pilih == 2:
-        nama_barang = input("pilih barang ")
-        print(connection.tampil_barang(nama_barang))
- 
- 
-def ui():
-     st.title('Halo Santika!')
- 
 
-if __name__=='__main__':
-    ui()
+    
+if __name__ == '__main__':
+    main()
+   
+#     format streamlit connection
+# type = "sql"
+# # url = "mysql://username:password@host:port/database"
