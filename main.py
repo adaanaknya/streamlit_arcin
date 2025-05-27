@@ -9,7 +9,7 @@ import db
 
 def main():
   st.header("Marching Band Dunia Fantasi")
-  st.page_link("pages/Data_Talent.py", label="Home", icon="🏠")
+ 
   
 
         
