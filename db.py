@@ -11,7 +11,20 @@ database = "storage_costtownon"
 port = "61002"
 username = "storage_costtownon"
 password = "c06342c974f010f014d095af8ebf435cbfd5beca"
+
+# hostname = "sql.freedb.tech"
+# database = "freedb_stufandb"
+# port = "3306"
+# username = "freedb_stufan"
+# password = "9d2KQKRUJ4A!E@d"
+
+# hostname = "sql211.hstn.me"
+# database = "mseet_39090657_sutfan"
+# port = "3306"
+# username = "mseet_39090657"
+# password = " jIdThfWubQnK!E@d"
 sysdate =  datetime.datetime.now()
+
 try:
     connection = mysql.connector.connect(host=hostname, database=database, user=username, password=password, port=port)
     if connection.is_connected():
@@ -30,10 +43,11 @@ except Error as e:
 def input_talent(id, nama, grade, creation_date, effective_start_date, effective_end_date):
     
     try:
-        cursor = connection.cursor()
-        insert = cursor.execute("INSERT INTO list_talent (id_talent, nama, grade, creation_date, effective_start_date, effective_end_date) VALUES (%s, %s, %s, %s, %s, %s)",(id, nama, grade, creation_date, effective_start_date, effective_end_date))
-        connection.commit()
-        return insert
+        with connection.cursor() as cursor:
+        # cursor = connection.cursor()
+            insert = cursor.execute("INSERT INTO list_talent (id_talent, nama, grade, creation_date, effective_start_date, effective_end_date) VALUES (%s, %s, %s, %s, %s, %s)",(id, nama, grade, creation_date, effective_start_date, effective_end_date))
+            connection.commit()
+            return insert
     except:
         print("Error")
     # return id, nama, grade, creation_date, effective_start_date, effective_end_date
@@ -41,14 +55,15 @@ def input_talent(id, nama, grade, creation_date, effective_start_date, effective
 def tampil_talent(nama,eff_date):
     
     try:
-        cursor = connection.cursor()
-        if nama:  # jika ada input pencarian
-            cursor.execute("SELECT id_talent, nama, grade FROM list_talent WHERE nama LIKE %s and %s between effective_start_date and effective_end_date", ('%' + nama + '%',eff_date))
-        else:  # jika tidak ada input, tampilkan semua
-            cursor.execute("SELECT id_talent, nama, grade FROM list_talent where %s between effective_start_date and effective_end_date",(eff_date,))
+        with connection.cursor() as cursor:
+            # cursor = connection.cursor()
+            if nama:  # jika ada input pencarian
+                cursor.execute("SELECT id_talent, nama, grade FROM list_talent WHERE nama LIKE %s and %s between effective_start_date and effective_end_date", ('%' + nama + '%',eff_date))
+            else:  # jika tidak ada input, tampilkan semua
+                cursor.execute("SELECT id_talent, nama, grade FROM list_talent where %s between effective_start_date and effective_end_date",(eff_date,))
 
-        write = cursor.fetchall()
-        return write
+            write = cursor.fetchall()
+            return write
 
     except Exception as e:
         st.warning(f"Error: {e}")
@@ -66,24 +81,87 @@ def tampil_talent(nama,eff_date):
 def update_talent(id,effective_start_date):
     
     try:
-        cursor = connection.cursor()
-        cursor.execute("SELECT MAX(creation_date) FROM list_talent WHERE id_talent=%s",(id,))
-        max_creation_date = cursor.fetchone()[0]
-        print(max_creation_date)
-        cursor.execute("update list_talent  set effective_end_date=%s where id_talent = %s and creation_date = %s",(effective_start_date,id,max_creation_date))
-        print("Updating")
-                # insert = cursor.execute("INSERT INTO list_talent (id_talent, nama, grade, creation_date, effective_start_date, effective_end_date) VALUES (%s, %s, %s, %s, %s, %s)",(id, nama, grade, creation_date, effective_start_date, effective_end_date))
-        connection.commit()
-        print("update selesai")
+        with connection.cursor() as cursor:
+        # cursor = connection.cursor()
+            cursor.execute("SELECT MAX(creation_date) FROM list_talent WHERE id_talent=%s",(id,))
+            max_creation_date = cursor.fetchone()[0]
+            print(max_creation_date)
+            cursor.execute("update list_talent  set effective_end_date=%s where id_talent = %s and creation_date = %s",(effective_start_date,id,max_creation_date))
+            print("Updating")
+                    # insert = cursor.execute("INSERT INTO list_talent (id_talent, nama, grade, creation_date, effective_start_date, effective_end_date) VALUES (%s, %s, %s, %s, %s, %s)",(id, nama, grade, creation_date, effective_start_date, effective_end_date))
+            connection.commit()
+            print("update selesai")
     except Exception as e:
         st.warning(f"Error {e}")
         
         
 def correct_talent(id,grade):
     try:
-        cursor= connection.cursor
-        cursor.execute("update list_talent  set grade=%s where id_talent = %s ",(id,grade))
-        print("Correcting")
-        connection.commit()
+        with connection.cursor() as cursor:
+            # cursor= connection.cursor
+            cursor.execute("update list_talent  set grade=%s where id_talent = %s ",(id,grade))
+            print("Correcting")
+            connection.commit()
     except Exception as e:
         print(f"Error {e}")
+        
+        
+def login(user,passw):
+    try:
+        with connection.cursor() as cursor:
+            # cursor= connection.cursor()
+            cursor.execute("select 1 from user where username = %s and password = %s",(user,passw))
+            stat = cursor.fetchone()[0]
+            return stat
+    except Exception as e:
+        print(f"Error {e}")
+        
+    
+def lov_nama(sysdate):
+    try:
+        with connection.cursor() as cursor:
+            # cursor = connection.cursor()
+            cursor.execute("SELECT id_talent, nama FROM list_talent WHERE  %s between effective_start_date and effective_end_date", (sysdate,))
+            write = cursor.fetchall()
+            return {name: id_talent for id_talent, name in write}
+    except Exception as e:
+        print(f"Error {e}")
+        
+def load_grade(sysdate,id):
+    try:
+        with connection.cursor() as cursor:
+            # cursor = connection.cursor()
+            
+            cursor.execute("SELECT  grade FROM list_talent WHERE  %s between effective_start_date and effective_end_date and id_talent = %s", (sysdate,id))
+            grade = cursor.fetchone()[0]
+            return grade
+    except Exception as e:
+        print(f"Error {e}")
+        
+        
+
+def input_absence(id,  grade, jumlah_main, creation_date,period,tagihan, effective_start_date,effective_end_date):
+    
+    try:
+        with connection.cursor() as cursor:
+        # cursor = connection.cursor()
+            insert = cursor.execute("INSERT INTO absence (id_talent, grade, jumlah_main, creation_date, periode,tagihan,period_start,period_end) VALUES (%s,%s,%s, %s, %s, %s, %s, %s)",(id,  grade, jumlah_main, creation_date,period,tagihan, effective_start_date,effective_end_date))
+            connection.commit()
+            return insert
+    except Exception as e:
+        print(f"Error {e}")
+        
+def tagihan_period(nama,period):
+    try:
+        with connection.cursor() as cursor:
+            # cursor = connection.cursor()
+            if nama:
+                cursor.execute("SELECT  lt.nama,lt.grade,ab.periode,FORMAT(ab.tagihan, 0) tagihan  FROM list_talent lt,absence ab where lt.id_talent = ab.id_talent and ab.period_start between lt.effective_start_date and lt.effective_end_date  and lt.nama like %s and ab.periode = %s",('%'+nama+'%',period))
+            else:
+                cursor.execute("SELECT  lt.nama,lt.grade,ab.periode,FORMAT(ab.tagihan, 0) tagihan  FROM list_talent lt,absence ab where lt.id_talent = ab.id_talent and ab.period_start between lt.effective_start_date and lt.effective_end_date and ab.periode = %s",(period,))
+        
+            grade = cursor.fetchall()
+            return grade
+    except Exception as e:
+        print(f"Error {e}")
+        
