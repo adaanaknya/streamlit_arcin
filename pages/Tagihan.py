@@ -19,6 +19,15 @@ with st.form(key="Tagihan Per Period"):
         st.dataframe(pd.DataFrame(data,columns=columns),hide_index=True) 
     else:
          st.dataframe(pd.DataFrame(data,columns=columns),hide_index=True) 
+         
+         
 with st.form(key="Tagihan Total"):
     st.header("Tagihan Total")   
-    submit = st.form_submit_button("Cari Nama") 
+    nama = st.text_input("Nama")
+    submit = st.form_submit_button("Cari") 
+    columns = ["Nama","Tagihan"]
+    data = db.tagihan_total(nama)
+    if submit:
+        st.dataframe(pd.DataFrame(data,columns=columns),hide_index=True) 
+    else:
+         st.dataframe(pd.DataFrame(data,columns=columns),hide_index=True) 

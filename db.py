@@ -165,3 +165,17 @@ def tagihan_period(nama,period):
     except Exception as e:
         print(f"Error {e}")
         
+def tagihan_total(nama):
+    try:
+        with connection.cursor() as cursor:
+            # cursor = connection.cursor()
+            if nama:
+                cursor.execute("SELECT  lt.nama,FORMAT(sum(ab.tagihan),0) tagihan  FROM list_talent lt,absence ab where lt.id_talent = ab.id_talent and ab.period_start between lt.effective_start_date and lt.effective_end_date  and lt.nama like %s   group by lt.nama",('%'+nama+'%'))
+            else:
+                cursor.execute("SELECT  lt.nama, FORMAT(sum(ab.tagihan),0) tagihan  FROM list_talent lt,absence ab where lt.id_talent = ab.id_talent and ab.period_start between lt.effective_start_date and lt.effective_end_date   group by lt.nama")
+    
+            grade = cursor.fetchall()
+            return grade
+    except Exception as e:
+        print(f"Error {e}")
+        
