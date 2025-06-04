@@ -18,7 +18,8 @@ bulan_mapping = {
     "Desember": "12"
 }
 col1, col2 = st.columns(2)
-
+cur = db.cur_amount()
+st.write("Saldo Kas : " +str(cur))
 with  col1:
     with st.form(key="Kas Masuk"):
         st.header("Kas Masuk")

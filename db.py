@@ -296,3 +296,17 @@ and DATE_FORMAT(tanggal, '%m') = %s  order by sum.tanggal asc''',(period,))
             return grade
     except Exception as e:
         print(f"Error {e}")
+        
+        
+def cur_amount():
+    try:
+        with connection.cursor() as cursor:
+            # cursor = connection.cursor()
+           
+            cursor.execute('''select format(km.total - kk.total,0) current_amount from (select sum(total) total from (select (harga * jumlah) total from kas_masuk) km) km,
+(select sum(total) total from (select (harga * jumlah) total from kas_keluar) kk) kk ''')
+            cur = cursor.fetchall()[0]
+           
+            return cur[0]
+    except Exception as e:
+        print(f"Error {e}")
