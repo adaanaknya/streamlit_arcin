@@ -227,8 +227,9 @@ def history_pembayaran(nama,date_from,date_to):
                 cursor.execute("SELECT  lt.nama ,py.keterangan,format(py.nominal,0) nominal,py.effective_date  FROM list_talent lt , payroll py  where  %s between lt.effective_start_date and lt.effective_end_date and py.id_talent = lt.id_talent  and   lt.nama like %s  and py.effective_date between %s and %s ",(sysdate,'%'+nama+'%',date_from,date_to))
             else:
                 cursor.execute("SELECT  lt.nama ,py.keterangan,format(py.nominal,0) nominal,py.effective_date  FROM list_talent lt , payroll py  where  %s between lt.effective_start_date and lt.effective_end_date and py.id_talent = lt.id_talent and  py.effective_date between %s and %s  ",(sysdate,date_from,date_to))
-    
+
             grade = cursor.fetchall()
+           
             return grade
     except Exception as e:
         print(f"Error {e}")
