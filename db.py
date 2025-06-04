@@ -31,17 +31,26 @@ effective_end_dates = "4712-12-31"
 effective_end_date = datetime.datetime.strptime(effective_end_dates, "%Y-%m-%d").date()
 
 
-try:
-    connection = mysql.connector.connect(host=hostname, database=database, user=username, password=password, port=port)
-    if connection.is_connected():
-        db_Info = connection.server_info
-        print("Connected to MySQL Server version ", db_Info)
-        cursor = connection.cursor()
-        cursor.execute("select database();")
-        record = cursor.fetchone()
-        print("You're connected to database: ", record)
-except Error as e:
-    print("Error while connecting to MySQL", e)
+def get_connection():
+    return mysql.connector.connect(
+        host=hostname,
+        database=database,
+        user=username,
+        password=password,
+        port=port
+    )
+    
+# try:
+#     connection = mysql.connector.connect(host=hostname, database=database, user=username, password=password, port=port)
+#     if connection.is_connected():
+#         db_Info = connection.server_info
+#         print("Connected to MySQL Server version ", db_Info)
+#         cursor = connection.cursor()
+#         cursor.execute("select database();")
+#         record = cursor.fetchone()
+#         print("You're connected to database: ", record)
+# except Error as e:
+#     print("Error while connecting to MySQL", e)
 # conn = st.connection("my_sql_connection", type="sql")
 
  
@@ -49,11 +58,13 @@ except Error as e:
 def input_talent(id, nama, grade, creation_date, effective_start_date, effective_end_date):
     
     try:
+        connection = get_connection()
         with connection.cursor() as cursor:
         # cursor = connection.cursor()
             insert = cursor.execute("INSERT INTO list_talent (id_talent, nama, grade, creation_date, effective_start_date, effective_end_date) VALUES (%s, %s, %s, %s, %s, %s)",(id, nama, grade, creation_date, effective_start_date, effective_end_date))
             connection.commit()
-            return insert
+        connection.close()    
+        return True
     except:
         print("Error")
     # return id, nama, grade, creation_date, effective_start_date, effective_end_date
@@ -61,6 +72,7 @@ def input_talent(id, nama, grade, creation_date, effective_start_date, effective
 def tampil_talent(nama,eff_date):
     
     try:
+        connection = get_connection()
         with connection.cursor() as cursor:
             # cursor = connection.cursor()
             if nama:  # jika ada input pencarian
@@ -69,7 +81,8 @@ def tampil_talent(nama,eff_date):
                 cursor.execute("SELECT id_talent, nama, grade FROM list_talent where %s between effective_start_date and effective_end_date order by nama",(eff_date,))
 
             write = cursor.fetchall()
-            return write
+        connection.close()    
+        return write
 
     except Exception as e:
         st.warning(f"Error: {e}")
@@ -87,6 +100,7 @@ def tampil_talent(nama,eff_date):
 def update_talent(id,effective_start_date):
     
     try:
+        connection = get_connection()
         with connection.cursor() as cursor:
         # cursor = connection.cursor()
             cursor.execute("SELECT MAX(creation_date) FROM list_talent WHERE id_talent=%s",(id,))
@@ -97,62 +111,74 @@ def update_talent(id,effective_start_date):
                     # insert = cursor.execute("INSERT INTO list_talent (id_talent, nama, grade, creation_date, effective_start_date, effective_end_date) VALUES (%s, %s, %s, %s, %s, %s)",(id, nama, grade, creation_date, effective_start_date, effective_end_date))
             connection.commit()
             st.success("Update Berhasil")
+        connection.close()  
     except Exception as e:
         st.warning(f"Error {e}")
         
         
 def correct_talent(id,grade):
     try:
+        connection = get_connection()
         with connection.cursor() as cursor:
             # cursor= connection.cursor
             cursor.execute("update list_talent  set grade=%s where id_talent = %s ",(id,grade))
             
             connection.commit()
             st.success("Correct Berhasil")
+        connection.close() 
     except Exception as e:
         print(f"Error {e}")
         
 def delete_talent(id):
     try:
+        connection = get_connection() 
         with connection.cursor() as cursor:
             # cursor= connection.cursor
             cursor.execute("delete from list_talent   where id_talent = %s ",( id,))
             
             connection.commit()
             st.success("Delete Berhasil")
+        connection.close() 
     except Exception as e:
         print(f"Error {e}")
         
         
 def login(user,passw):
     try:
+        connection = get_connection() 
         with connection.cursor() as cursor:
             # cursor= connection.cursor()
             cursor.execute("select 1 from user where username = %s and password = %s",(user,passw))
             stat = cursor.fetchone()[0]
-            return stat
+        connection.close() 
+        return stat
     except Exception as e:
         print(f"Error {e}")
         
     
 def lov_nama(sysdate):
     try:
+        connection = get_connection() 
         with connection.cursor() as cursor:
             # cursor = connection.cursor()
             cursor.execute("SELECT id_talent, nama FROM list_talent WHERE  %s between effective_start_date and effective_end_date", (sysdate,))
             write = cursor.fetchall()
-            return {name: id_talent for id_talent, name in write}
+        connection.close() 
+        return {name: id_talent for id_talent, name in write}
     except Exception as e:
         print(f"Error {e}")
         
 def load_grade(sysdate,id):
     try:
+        connection = get_connection() 
         with connection.cursor() as cursor:
             # cursor = connection.cursor()
             
             cursor.execute("SELECT  grade FROM list_talent WHERE  %s between effective_start_date and effective_end_date and id_talent = %s", (sysdate,id))
             grade = cursor.fetchone()[0]
-            return grade
+        
+        connection.close()     
+        return grade
     except Exception as e:
         print(f"Error {e}")
         
@@ -161,16 +187,20 @@ def load_grade(sysdate,id):
 def input_absence(id,  grade, jumlah_main, creation_date,period,tagihan, effective_start_date,effective_end_date):
     
     try:
+        connection = get_connection() 
         with connection.cursor() as cursor:
         # cursor = connection.cursor()
             insert = cursor.execute("INSERT INTO absence (id_talent, grade, jumlah_main, creation_date, periode,tagihan,period_start,period_end) VALUES (%s,%s,%s, %s, %s, %s, %s, %s)",(id,  grade, jumlah_main, creation_date,period,tagihan, effective_start_date,effective_end_date))
             connection.commit()
-            return insert
+        
+        connection.close() 
+        return insert
     except Exception as e:
         print(f"Error {e}")
         
 def tagihan_period(nama,period,tahun):
     try:
+        connection = get_connection() 
         with connection.cursor() as cursor:
             # cursor = connection.cursor()
             if nama:
@@ -181,12 +211,15 @@ def tagihan_period(nama,period,tahun):
                 cursor.execute("SELECT  lt.nama,lt.grade,ab.periode,year(ab.period_start) tahun ,FORMAT(sum(ab.tagihan), 0) tagihan  FROM list_talent lt,absence ab where lt.id_talent = ab.id_talent and ab.period_start between lt.effective_start_date and lt.effective_end_date and ab.periode = %s group by lt.nama,lt.grade,ab.periode,year(ab.period_start)",(period,))
         
             grade = cursor.fetchall()
-            return grade
+        
+        connection.close()     
+        return grade
     except Exception as e:
         print(f"Error {e}")
         
 def tagihan_total(nama):
     try:
+        connection = get_connection() 
         with connection.cursor() as cursor:
             # cursor = connection.cursor()
             if nama:
@@ -203,7 +236,9 @@ left join
 (select p.id_talent, sum(p.nominal) nominal  from payroll p where 1=1 group by p.id_talent) pa on tg.id_talent = pa.id_talent order by tg.nama ''')
     
             grade = cursor.fetchall()
-            return grade
+        
+        connection.close()     
+        return grade
     except Exception as e:
         print(f"Error {e}")
         
@@ -211,16 +246,21 @@ left join
 def input_pembayaran(id_talent,keterangan,nominal,eff_date):
     
     try:
+        connection = get_connection() 
         with connection.cursor() as cursor:
         # cursor = connection.cursor()
             insert = cursor.execute("INSERT INTO payroll (id_pembayaran, id_talent, keterangan, creation_date, nominal,effective_date) VALUES (%s,%s,%s, %s, %s,%s)",(creation_date_format,  id_talent, keterangan, sysdate,nominal,eff_date))
             connection.commit()
-            return insert
+        
+        
+        connection.close()     
+        return insert
     except Exception as e:
         print(f"Error {e}")
         
 def history_pembayaran(nama,date_from,date_to):
     try:
+        connection = get_connection() 
         with connection.cursor() as cursor:
             # cursor = connection.cursor()
             if nama:
@@ -229,22 +269,25 @@ def history_pembayaran(nama,date_from,date_to):
                 cursor.execute("SELECT  lt.nama ,py.keterangan,format(py.nominal,0) nominal,py.effective_date  FROM list_talent lt , payroll py  where  %s between lt.effective_start_date and lt.effective_end_date and py.id_talent = lt.id_talent and  py.effective_date between %s and %s  ",(sysdate,date_from,date_to))
 
             grade = cursor.fetchall()
-           
-            return grade
+        
+        connection.close()    
+        return grade
     except Exception as e:
         print(f"Error {e}")
 
 
 def calculate(date_from,date_to):
     try:
+        connection = get_connection() 
         with connection.cursor() as cursor:
             # cursor = connection.cursor()
            
             cursor.execute("SELECT  format(sum(py.nominal),0) nominal  FROM list_talent lt , payroll py  where  %s between lt.effective_start_date and lt.effective_end_date and py.id_talent = lt.id_talent and  py.effective_date between %s and %s  ",(sysdate,date_from,date_to))
  
             cal = cursor.fetchall()[0]
-           
-            return cal[0]
+        
+        connection.close()    
+        return cal[0]
     except Exception as e:
         print(f"Error {e}")
         
@@ -252,12 +295,15 @@ def calculate(date_from,date_to):
 def input_kas_masuk(nama,keterangan,harga,jumlah,tanggal):
     
     try:
+        connection = get_connection() 
         with connection.cursor() as cursor:
         # cursor = connection.cursor()
             insert = cursor.execute("INSERT INTO kas_masuk (id_kas_masuk, nama, keterangan, harga, jumlah,tanggal) VALUES (%s,%s,%s, %s, %s,%s)",(creation_date_format,  nama, keterangan, harga,jumlah,tanggal))
             connection.commit()
             st.success("Berhasil Input!")
-            return insert
+            
+        connection.close()     
+        return insert
     except Exception as e:
         print(f"Error {e}")
 
@@ -265,18 +311,22 @@ def input_kas_masuk(nama,keterangan,harga,jumlah,tanggal):
 def input_kas_keluar(nama,keterangan,harga,jumlah,tanggal):
     
     try:
+        connection = get_connection() 
         with connection.cursor() as cursor:
         # cursor = connection.cursor()
             insert = cursor.execute("INSERT INTO kas_keluar (id_kas_keluar, nama, keterangan, harga, jumlah,tanggal) VALUES (%s,%s,%s, %s, %s,%s)",(creation_date_format,  nama, keterangan, harga,jumlah,tanggal))
             connection.commit()
             st.success("Berhasil Input!")
-            return insert
+            
+        connection.close()     
+        return insert
     except Exception as e:
         print(f"Error {e}")
         
 
 def history_kas(period,tahun):
     try:
+        connection = get_connection() 
         with connection.cursor() as cursor:
             # cursor = connection.cursor()
             if tahun:
@@ -293,13 +343,15 @@ and DATE_FORMAT(tanggal, '%m') = %s  order by sum.tanggal asc''',(period,))
 
             grade = cursor.fetchall()
            
-            return grade
+        connection.close()     
+        return grade
     except Exception as e:
         print(f"Error {e}")
         
         
 def cur_amount():
     try:
+        connection = get_connection() 
         with connection.cursor() as cursor:
             # cursor = connection.cursor()
            
@@ -307,6 +359,7 @@ def cur_amount():
 (select sum(total) total from (select (harga * jumlah) total from kas_keluar) kk) kk ''')
             cur = cursor.fetchall()[0]
            
-            return cur[0]
+        connection.close() 
+        return cur[0]
     except Exception as e:
         print(f"Error {e}")
