@@ -182,7 +182,7 @@ def tagihan_total(nama):
 (SELECT  lt.id_talent,lt.nama, sum(ab.tagihan) tagihan 
 FROM list_talent lt join absence ab on lt.id_talent = ab.id_talent where  ab.period_start between lt.effective_start_date and lt.effective_end_date group by  lt.id_talent,lt.nama) tg 
 left join 
-(select p.id_talent, sum(p.nominal) nominal  from payroll p where 1=1 group by p.id_talent) pa on tg.id_talent = pa.id_talent and  lt.nama like %s   group by tg.nama''',('%'+nama+'%',))
+(select p.id_talent, sum(p.nominal) nominal  from payroll p where 1=1 group by p.id_talent) pa on tg.id_talent = pa.id_talent where  tg.nama like %s   ''',('%'+nama+'%',))
             else:
                 cursor.execute('''select tg.nama,format( tg.tagihan - ifnull(pa.nominal,0),0) from 
 (SELECT  lt.id_talent,lt.nama, sum(ab.tagihan) tagihan 
