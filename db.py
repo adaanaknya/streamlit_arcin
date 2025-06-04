@@ -23,7 +23,13 @@ password = "c06342c974f010f014d095af8ebf435cbfd5beca"
 # port = "3306"
 # username = "mseet_39090657"
 # password = " jIdThfWubQnK!E@d"
-sysdate =  datetime.datetime.now()
+creation_dates=  datetime.datetime.now()
+creation_date_format = creation_dates.strftime('%Y%m%d%H%M%S')
+sysdate = creation_dates.strftime('%Y-%m-%d %H:%M:%S')
+effective_start= creation_dates.strftime('%Y-%m-%d')
+effective_end_dates = "4712-12-31"
+effective_end_date = datetime.datetime.strptime(effective_end_dates, "%Y-%m-%d").date()
+
 
 try:
     connection = mysql.connector.connect(host=hostname, database=database, user=username, password=password, port=port)
@@ -151,14 +157,16 @@ def input_absence(id,  grade, jumlah_main, creation_date,period,tagihan, effecti
     except Exception as e:
         print(f"Error {e}")
         
-def tagihan_period(nama,period):
+def tagihan_period(nama,period,tahun):
     try:
         with connection.cursor() as cursor:
             # cursor = connection.cursor()
             if nama:
-                cursor.execute("SELECT  lt.nama,lt.grade,ab.periode,FORMAT(ab.tagihan, 0) tagihan  FROM list_talent lt,absence ab where lt.id_talent = ab.id_talent and ab.period_start between lt.effective_start_date and lt.effective_end_date  and lt.nama like %s and ab.periode = %s",('%'+nama+'%',period))
+                cursor.execute("SELECT  lt.nama,lt.grade,ab.periode,year(ab.period_start) tahun ,FORMAT(ab.tagihan, 0) tagihan  FROM list_talent lt,absence ab where lt.id_talent = ab.id_talent and ab.period_start between lt.effective_start_date and lt.effective_end_date  and lt.nama like %s and ab.periode = %s",('%'+nama+'%',period))
+            elif tahun: 
+                 cursor.execute("SELECT  lt.nama,lt.grade,ab.periode,year(ab.period_start) tahun ,FORMAT(ab.tagihan, 0) tagihan  FROM list_talent lt,absence ab where lt.id_talent = ab.id_talent and ab.period_start between lt.effective_start_date and lt.effective_end_date  and year(ab.period_start) = %s and ab.periode = %s",(tahun,period))
             else:
-                cursor.execute("SELECT  lt.nama,lt.grade,ab.periode,FORMAT(ab.tagihan, 0) tagihan  FROM list_talent lt,absence ab where lt.id_talent = ab.id_talent and ab.period_start between lt.effective_start_date and lt.effective_end_date and ab.periode = %s",(period,))
+                cursor.execute("SELECT  lt.nama,lt.grade,ab.periode,year(ab.period_start) tahun ,FORMAT(ab.tagihan, 0) tagihan  FROM list_talent lt,absence ab where lt.id_talent = ab.id_talent and ab.period_start between lt.effective_start_date and lt.effective_end_date and ab.periode = %s",(period,))
         
             grade = cursor.fetchall()
             return grade
@@ -170,12 +178,45 @@ def tagihan_total(nama):
         with connection.cursor() as cursor:
             # cursor = connection.cursor()
             if nama:
-                cursor.execute("SELECT  lt.nama,FORMAT(sum(ab.tagihan),0) tagihan  FROM list_talent lt,absence ab where lt.id_talent = ab.id_talent and ab.period_start between lt.effective_start_date and lt.effective_end_date  and lt.nama like %s   group by lt.nama",('%'+nama+'%'))
+                cursor.execute('''select tg.nama,format( tg.tagihan - ifnull(pa.nominal,0),0) from 
+(SELECT  lt.id_talent,lt.nama, sum(ab.tagihan) tagihan 
+FROM list_talent lt join absence ab on lt.id_talent = ab.id_talent where  ab.period_start between lt.effective_start_date and lt.effective_end_date group by  lt.id_talent,lt.nama) tg 
+left join 
+(select p.id_talent, sum(p.nominal) nominal  from payroll p where 1=1 group by p.id_talent) pa on tg.id_talent = pa.id_talent and  lt.nama like %s   group by tg.nama''',('%'+nama+'%',))
             else:
-                cursor.execute("SELECT  lt.nama, FORMAT(sum(ab.tagihan),0) tagihan  FROM list_talent lt,absence ab where lt.id_talent = ab.id_talent and ab.period_start between lt.effective_start_date and lt.effective_end_date   group by lt.nama")
+                cursor.execute('''select tg.nama,format( tg.tagihan - ifnull(pa.nominal,0),0) from 
+(SELECT  lt.id_talent,lt.nama, sum(ab.tagihan) tagihan 
+FROM list_talent lt join absence ab on lt.id_talent = ab.id_talent where  ab.period_start between lt.effective_start_date and lt.effective_end_date group by  lt.id_talent,lt.nama) tg 
+left join 
+(select p.id_talent, sum(p.nominal) nominal  from payroll p where 1=1 group by p.id_talent) pa on tg.id_talent = pa.id_talent''')
     
             grade = cursor.fetchall()
             return grade
     except Exception as e:
         print(f"Error {e}")
         
+        
+def input_pembayaran(id_talent,keterangan,nominal):
+    
+    try:
+        with connection.cursor() as cursor:
+        # cursor = connection.cursor()
+            insert = cursor.execute("INSERT INTO payroll (id_pembayaran, id_talent, keterangan, creation_date, nominal) VALUES (%s,%s,%s, %s, %s)",(creation_date_format,  id_talent, keterangan, sysdate,nominal))
+            connection.commit()
+            return insert
+    except Exception as e:
+        print(f"Error {e}")
+        
+def history_pembayaran(nama,date_from,date_to):
+    try:
+        with connection.cursor() as cursor:
+            # cursor = connection.cursor()
+            if nama:
+                cursor.execute("SELECT  lt.nama ,py.keterangan,format(py.nominal,0) nominal,py.creation_date  FROM list_talent lt , payroll py  where  %s between lt.effective_start_date and lt.effective_end_date and py.id_talent = lt.id_talent  and   lt.nama like %s  and py.creation_date between %s and %s ",(sysdate,'%'+nama+'%',date_from,date_to))
+            else:
+                cursor.execute("SELECT  lt.nama ,py.keterangan,format(py.nominal,0) nominal,py.creation_date  FROM list_talent lt , payroll py  where  %s between lt.effective_start_date and lt.effective_end_date and py.id_talent = lt.id_talent and py.creation_date between %s and %s  ",(sysdate,date_from,date_to))
+    
+            grade = cursor.fetchall()
+            return grade
+    except Exception as e:
+        print(f"Error {e}")
