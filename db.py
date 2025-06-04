@@ -64,9 +64,9 @@ def tampil_talent(nama,eff_date):
         with connection.cursor() as cursor:
             # cursor = connection.cursor()
             if nama:  # jika ada input pencarian
-                cursor.execute("SELECT id_talent, nama, grade FROM list_talent WHERE nama LIKE %s and %s between effective_start_date and effective_end_date", ('%' + nama + '%',eff_date))
+                cursor.execute("SELECT id_talent, nama, grade FROM list_talent WHERE nama LIKE %s and %s between effective_start_date and effective_end_date order by nama", ('%' + nama + '%',eff_date))
             else:  # jika tidak ada input, tampilkan semua
-                cursor.execute("SELECT id_talent, nama, grade FROM list_talent where %s between effective_start_date and effective_end_date",(eff_date,))
+                cursor.execute("SELECT id_talent, nama, grade FROM list_talent where %s between effective_start_date and effective_end_date order by nama",(eff_date,))
 
             write = cursor.fetchall()
             return write
@@ -96,7 +96,7 @@ def update_talent(id,effective_start_date):
             print("Updating")
                     # insert = cursor.execute("INSERT INTO list_talent (id_talent, nama, grade, creation_date, effective_start_date, effective_end_date) VALUES (%s, %s, %s, %s, %s, %s)",(id, nama, grade, creation_date, effective_start_date, effective_end_date))
             connection.commit()
-            print("update selesai")
+            st.success("Update Berhasil")
     except Exception as e:
         st.warning(f"Error {e}")
         
@@ -106,8 +106,20 @@ def correct_talent(id,grade):
         with connection.cursor() as cursor:
             # cursor= connection.cursor
             cursor.execute("update list_talent  set grade=%s where id_talent = %s ",(id,grade))
-            print("Correcting")
+            
             connection.commit()
+            st.success("Correct Berhasil")
+    except Exception as e:
+        print(f"Error {e}")
+        
+def delete_talent(id):
+    try:
+        with connection.cursor() as cursor:
+            # cursor= connection.cursor
+            cursor.execute("delete from list_talent   where id_talent = %s ",( id,))
+            
+            connection.commit()
+            st.success("Delete Berhasil")
     except Exception as e:
         print(f"Error {e}")
         
@@ -182,13 +194,13 @@ def tagihan_total(nama):
 (SELECT  lt.id_talent,lt.nama, sum(ab.tagihan) tagihan 
 FROM list_talent lt join absence ab on lt.id_talent = ab.id_talent where  ab.period_start between lt.effective_start_date and lt.effective_end_date group by  lt.id_talent,lt.nama) tg 
 left join 
-(select p.id_talent, sum(p.nominal) nominal  from payroll p where 1=1 group by p.id_talent) pa on tg.id_talent = pa.id_talent where  tg.nama like %s   ''',('%'+nama+'%',))
+(select p.id_talent, sum(p.nominal) nominal  from payroll p where 1=1 group by p.id_talent) pa on tg.id_talent = pa.id_talent where  tg.nama like %s  order by tg.nama  ''',('%'+nama+'%',))
             else:
                 cursor.execute('''select tg.nama,format( tg.tagihan - ifnull(pa.nominal,0),0) from 
 (SELECT  lt.id_talent,lt.nama, sum(ab.tagihan) tagihan 
 FROM list_talent lt join absence ab on lt.id_talent = ab.id_talent where  ab.period_start between lt.effective_start_date and lt.effective_end_date group by  lt.id_talent,lt.nama) tg 
 left join 
-(select p.id_talent, sum(p.nominal) nominal  from payroll p where 1=1 group by p.id_talent) pa on tg.id_talent = pa.id_talent''')
+(select p.id_talent, sum(p.nominal) nominal  from payroll p where 1=1 group by p.id_talent) pa on tg.id_talent = pa.id_talent order by tg.nama ''')
     
             grade = cursor.fetchall()
             return grade

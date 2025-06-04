@@ -94,4 +94,11 @@ with st.form(key="Edit"):
             st.write("Correct Berhasil ID "+ input1)
         else:
             st.warning("Pilih 1!")  
+    elif delete:
+         if  input1 != "":
+            db.delete_talent(input1)
+            st.write("Delete Berhasil ID "+ input1)
+         else:
+            st.warning("Pilih 1!")  
+            
     
