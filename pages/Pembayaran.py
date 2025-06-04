@@ -40,3 +40,8 @@ with st.form(key="history pembayaran"):
         st.dataframe(pd.DataFrame(data,columns=columns),hide_index=True) 
     else:
          st.dataframe(pd.DataFrame(data,columns=columns),hide_index=True) 
+         
+    calculate = st.form_submit_button("Calculate")
+    result = db.calculate(date_from,date_to)
+    if calculate:
+        st.write("Total = "+result)

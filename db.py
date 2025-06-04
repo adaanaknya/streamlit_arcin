@@ -174,11 +174,11 @@ def tagihan_period(nama,period,tahun):
         with connection.cursor() as cursor:
             # cursor = connection.cursor()
             if nama:
-                cursor.execute("SELECT  lt.nama,lt.grade,ab.periode,year(ab.period_start) tahun ,FORMAT(ab.tagihan, 0) tagihan  FROM list_talent lt,absence ab where lt.id_talent = ab.id_talent and ab.period_start between lt.effective_start_date and lt.effective_end_date  and lt.nama like %s and ab.periode = %s",('%'+nama+'%',period))
+                cursor.execute("SELECT  lt.nama,lt.grade,ab.periode,year(ab.period_start) tahun ,FORMAT(sum(ab.tagihan), 0) tagihan  FROM list_talent lt,absence ab where lt.id_talent = ab.id_talent and ab.period_start between lt.effective_start_date and lt.effective_end_date  and lt.nama like %s and ab.periode = %s group by lt.nama,lt.grade,ab.periode,year(ab.period_start)" ,('%'+nama+'%',period))
             elif tahun: 
-                 cursor.execute("SELECT  lt.nama,lt.grade,ab.periode,year(ab.period_start) tahun ,FORMAT(ab.tagihan, 0) tagihan  FROM list_talent lt,absence ab where lt.id_talent = ab.id_talent and ab.period_start between lt.effective_start_date and lt.effective_end_date  and year(ab.period_start) = %s and ab.periode = %s",(tahun,period))
+                 cursor.execute("SELECT  lt.nama,lt.grade,ab.periode,year(ab.period_start) tahun ,FORMAT(sum(ab.tagihan), 0) tagihan  FROM list_talent lt,absence ab where lt.id_talent = ab.id_talent and ab.period_start between lt.effective_start_date and lt.effective_end_date  and year(ab.period_start) = %s and ab.periode = %s group by lt.nama,lt.grade,ab.periode,year(ab.period_start)",(tahun,period))
             else:
-                cursor.execute("SELECT  lt.nama,lt.grade,ab.periode,year(ab.period_start) tahun ,FORMAT(ab.tagihan, 0) tagihan  FROM list_talent lt,absence ab where lt.id_talent = ab.id_talent and ab.period_start between lt.effective_start_date and lt.effective_end_date and ab.periode = %s",(period,))
+                cursor.execute("SELECT  lt.nama,lt.grade,ab.periode,year(ab.period_start) tahun ,FORMAT(sum(ab.tagihan), 0) tagihan  FROM list_talent lt,absence ab where lt.id_talent = ab.id_talent and ab.period_start between lt.effective_start_date and lt.effective_end_date and ab.periode = %s group by lt.nama,lt.grade,ab.periode,year(ab.period_start)",(period,))
         
             grade = cursor.fetchall()
             return grade
@@ -227,6 +227,69 @@ def history_pembayaran(nama,date_from,date_to):
                 cursor.execute("SELECT  lt.nama ,py.keterangan,format(py.nominal,0) nominal,py.effective_date  FROM list_talent lt , payroll py  where  %s between lt.effective_start_date and lt.effective_end_date and py.id_talent = lt.id_talent  and   lt.nama like %s  and py.effective_date between %s and %s ",(sysdate,'%'+nama+'%',date_from,date_to))
             else:
                 cursor.execute("SELECT  lt.nama ,py.keterangan,format(py.nominal,0) nominal,py.effective_date  FROM list_talent lt , payroll py  where  %s between lt.effective_start_date and lt.effective_end_date and py.id_talent = lt.id_talent and  py.effective_date between %s and %s  ",(sysdate,date_from,date_to))
+
+            grade = cursor.fetchall()
+           
+            return grade
+    except Exception as e:
+        print(f"Error {e}")
+
+
+def calculate(date_from,date_to):
+    try:
+        with connection.cursor() as cursor:
+            # cursor = connection.cursor()
+           
+            cursor.execute("SELECT  format(sum(py.nominal),0) nominal  FROM list_talent lt , payroll py  where  %s between lt.effective_start_date and lt.effective_end_date and py.id_talent = lt.id_talent and  py.effective_date between %s and %s  ",(sysdate,date_from,date_to))
+ 
+            cal = cursor.fetchall()[0]
+           
+            return cal[0]
+    except Exception as e:
+        print(f"Error {e}")
+        
+        
+def input_kas_masuk(nama,keterangan,harga,jumlah,tanggal):
+    
+    try:
+        with connection.cursor() as cursor:
+        # cursor = connection.cursor()
+            insert = cursor.execute("INSERT INTO kas_masuk (id_kas_masuk, nama, keterangan, harga, jumlah,tanggal) VALUES (%s,%s,%s, %s, %s,%s)",(creation_date_format,  nama, keterangan, harga,jumlah,tanggal))
+            connection.commit()
+            st.success("Berhasil Input!")
+            return insert
+    except Exception as e:
+        print(f"Error {e}")
+
+
+def input_kas_keluar(nama,keterangan,harga,jumlah,tanggal):
+    
+    try:
+        with connection.cursor() as cursor:
+        # cursor = connection.cursor()
+            insert = cursor.execute("INSERT INTO kas_keluar (id_kas_keluar, nama, keterangan, harga, jumlah,tanggal) VALUES (%s,%s,%s, %s, %s,%s)",(creation_date_format,  nama, keterangan, harga,jumlah,tanggal))
+            connection.commit()
+            st.success("Berhasil Input!")
+            return insert
+    except Exception as e:
+        print(f"Error {e}")
+        
+
+def history_kas(period,tahun):
+    try:
+        with connection.cursor() as cursor:
+            # cursor = connection.cursor()
+            if tahun:
+                cursor.execute(''' select nama,keterangan,harga,jumlah,tanggal,component,total from (select nama,keterangan,format(harga,0) harga,jumlah,tanggal,'Kas Masuk' component,format(harga * jumlah,0) total from kas_masuk
+union all
+select nama,keterangan,format(harga,0) harga,jumlah,tanggal,'Kas Keluar' component,format (harga * jumlah,0) total from kas_keluar) sum where 1=1 
+and DATE_FORMAT(tanggal, '%m') = %s and year(tanggal)= %s order by sum.tanggal asc
+''',(period,tahun))
+            else:
+                cursor.execute(''' select nama,keterangan,harga,jumlah,tanggal,component,total from (select nama,keterangan,format(harga,0) harga,jumlah,tanggal,'Kas Masuk' component,format(harga * jumlah,0) total from kas_masuk
+union all
+select nama,keterangan,format(harga,0) harga,jumlah,tanggal,'Kas Keluar' component,format (harga * jumlah,0) total from kas_keluar) sum where 1=1 
+and DATE_FORMAT(tanggal, '%m') = %s  order by sum.tanggal asc''',(period,))
 
             grade = cursor.fetchall()
            
