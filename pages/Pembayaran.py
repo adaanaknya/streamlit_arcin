@@ -18,12 +18,12 @@ with st.form(key="Pembayaran"):
     keterangan = st.selectbox(
     "Cash / Transfer",
     ("Cash", "Transfer"))
-   
+    tanggal = st.date_input("Tanggal")
     nominal =  st.number_input("Jumlah Bayar (Dalam rupiah tanpa titik contoh 5000)" ,step=1,format="%d")
     submit = st.form_submit_button("Input")
     if submit:
-        if nama_talent and keterangan and nominal:
-            db.input_pembayaran(id_talent,keterangan,nominal)
+        if nama_talent and keterangan and nominal and tanggal:
+            db.input_pembayaran(id_talent,keterangan,nominal,tanggal)
             st.success("Data Behasil di input")
         else:
             st.warning("Field Harus Di isi semua")

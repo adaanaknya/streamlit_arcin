@@ -196,12 +196,12 @@ left join
         print(f"Error {e}")
         
         
-def input_pembayaran(id_talent,keterangan,nominal):
+def input_pembayaran(id_talent,keterangan,nominal,eff_date):
     
     try:
         with connection.cursor() as cursor:
         # cursor = connection.cursor()
-            insert = cursor.execute("INSERT INTO payroll (id_pembayaran, id_talent, keterangan, creation_date, nominal) VALUES (%s,%s,%s, %s, %s)",(creation_date_format,  id_talent, keterangan, sysdate,nominal))
+            insert = cursor.execute("INSERT INTO payroll (id_pembayaran, id_talent, keterangan, creation_date, nominal,effective_date) VALUES (%s,%s,%s, %s, %s,%s)",(creation_date_format,  id_talent, keterangan, sysdate,nominal,eff_date))
             connection.commit()
             return insert
     except Exception as e:
@@ -212,9 +212,9 @@ def history_pembayaran(nama,date_from,date_to):
         with connection.cursor() as cursor:
             # cursor = connection.cursor()
             if nama:
-                cursor.execute("SELECT  lt.nama ,py.keterangan,format(py.nominal,0) nominal,py.creation_date  FROM list_talent lt , payroll py  where  %s between lt.effective_start_date and lt.effective_end_date and py.id_talent = lt.id_talent  and   lt.nama like %s  and py.creation_date between %s and %s ",(sysdate,'%'+nama+'%',date_from,date_to))
+                cursor.execute("SELECT  lt.nama ,py.keterangan,format(py.nominal,0) nominal,py.effective_date  FROM list_talent lt , payroll py  where  %s between lt.effective_start_date and lt.effective_end_date and py.id_talent = lt.id_talent  and   lt.nama like %s  and py.effective_date between %s and %s ",(sysdate,'%'+nama+'%',date_from,date_to))
             else:
-                cursor.execute("SELECT  lt.nama ,py.keterangan,format(py.nominal,0) nominal,py.creation_date  FROM list_talent lt , payroll py  where  %s between lt.effective_start_date and lt.effective_end_date and py.id_talent = lt.id_talent and py.creation_date between %s and %s  ",(sysdate,date_from,date_to))
+                cursor.execute("SELECT  lt.nama ,py.keterangan,format(py.nominal,0) nominal,py.effective_date  FROM list_talent lt , payroll py  where  %s between lt.effective_start_date and lt.effective_end_date and py.id_talent = lt.id_talent and  py.effective_date between %s and %s  ",(sysdate,date_from,date_to))
     
             grade = cursor.fetchall()
             return grade
