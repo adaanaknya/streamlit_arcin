@@ -292,13 +292,13 @@ def calculate(date_from,date_to):
         print(f"Error {e}")
         
         
-def input_kas_masuk(nama,keterangan,harga,jumlah,tanggal):
+def input_kas_masuk(id,nama,keterangan,harga,jumlah,tanggal):
     
     try:
         connection = get_connection() 
         with connection.cursor() as cursor:
         # cursor = connection.cursor()
-            insert = cursor.execute("INSERT INTO kas_masuk (id_kas_masuk, nama, keterangan, harga, jumlah,tanggal) VALUES (%s,%s,%s, %s, %s,%s)",(creation_date_format,  nama, keterangan, harga,jumlah,tanggal))
+            insert = cursor.execute("INSERT INTO kas_masuk (id_kas_masuk, nama, keterangan, harga, jumlah,tanggal) VALUES (%s,%s,%s, %s, %s,%s)",(id,  nama, keterangan, harga,jumlah,tanggal))
             connection.commit()
             st.success("Berhasil Input!")
             
@@ -308,13 +308,13 @@ def input_kas_masuk(nama,keterangan,harga,jumlah,tanggal):
         print(f"Error {e}")
 
 
-def input_kas_keluar(nama,keterangan,harga,jumlah,tanggal):
+def input_kas_keluar(id,nama,keterangan,harga,jumlah,tanggal):
     
     try:
         connection = get_connection() 
         with connection.cursor() as cursor:
         # cursor = connection.cursor()
-            insert = cursor.execute("INSERT INTO kas_keluar (id_kas_keluar, nama, keterangan, harga, jumlah,tanggal) VALUES (%s,%s,%s, %s, %s,%s)",(creation_date_format,  nama, keterangan, harga,jumlah,tanggal))
+            insert = cursor.execute("INSERT INTO kas_keluar (id_kas_keluar, nama, keterangan, harga, jumlah,tanggal) VALUES (%s,%s,%s, %s, %s,%s)",(id,  nama, keterangan, harga,jumlah,tanggal))
             connection.commit()
             st.success("Berhasil Input!")
             

@@ -3,6 +3,15 @@ import pandas as pd
 import datetime
 import db
 
+
+creation_dates=  datetime.datetime.now()
+creation_date_format = creation_dates.strftime('%Y%m%d%H%M%S')
+sysdate = creation_dates.strftime('%Y-%m-%d %H:%M:%S')
+effective_start= creation_dates.strftime('%Y-%m-%d')
+effective_end_dates = "4712-12-31"
+effective_end_date = datetime.datetime.strptime(effective_end_dates, "%Y-%m-%d").date()
+
+
 st.set_page_config(layout="wide")
 bulan_mapping = {
     "Januari": "01",
@@ -32,7 +41,7 @@ with  col1:
         submit = st.form_submit_button("Input") 
         if submit:
             if nama and keterangan and harga and jumlah and tanggal:
-                db.input_kas_masuk(nama,keterangan,harga,jumlah,tanggal)
+                db.input_kas_masuk(creation_date_format,nama,keterangan,harga,jumlah,tanggal)
             else:
                 st.warning("Isi semua field!")
         
@@ -47,7 +56,7 @@ with col2:
         submit = st.form_submit_button("Input") 
         if submit:
             if nama and keterangan and harga and jumlah and tanggal:
-                db.input_kas_keluar(nama,keterangan,harga,jumlah,tanggal)
+                db.input_kas_keluar(creation_date_format,nama,keterangan,harga,jumlah,tanggal)
             else:
                 st.warning("Isi semua field!")
                 
