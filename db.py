@@ -18,11 +18,11 @@ password = "c06342c974f010f014d095af8ebf435cbfd5beca"
 # username = "freedb_stufan"
 # password = "9d2KQKRUJ4A!E@d"
 
-# hostname = "sql211.hstn.me"
-# database = "mseet_39090657_sutfan"
+# hostname = "sql.freedb.tech"
+# database = "freedb_stufandb"
 # port = "3306"
-# username = "mseet_39090657"
-# password = " jIdThfWubQnK!E@d"
+# username = "freedb_stufan"
+# password = " 9d2KQKRUJ4A!E@d"
 creation_dates=  datetime.datetime.now()
 creation_date_format = creation_dates.strftime('%Y%m%d%H%M%S')
 sysdate = creation_dates.strftime('%Y-%m-%d %H:%M:%S')
@@ -161,7 +161,7 @@ def lov_nama(sysdate):
         connection = get_connection() 
         with connection.cursor() as cursor:
             # cursor = connection.cursor()
-            cursor.execute("SELECT id_talent, nama FROM list_talent WHERE  %s between effective_start_date and effective_end_date", (sysdate,))
+            cursor.execute("SELECT id_talent, nama FROM list_talent WHERE  %s between effective_start_date and effective_end_date order by nama", (sysdate,))
             write = cursor.fetchall()
         connection.close() 
         return {name: id_talent for id_talent, name in write}
@@ -361,5 +361,30 @@ def cur_amount():
            
         connection.close() 
         return cur[0]
+    except Exception as e:
+        print(f"Error {e}")
+        
+        
+        
+def history_absence(period,tahun):
+    try:
+        connection = get_connection() 
+        with connection.cursor() as cursor:
+            # cursor = connection.cursor()
+            if tahun:
+                cursor.execute('''SELECT  lt.nama,lt.grade,ab.periode,year(ab.period_start) tahun ,jumlah_main
+FROM list_talent lt,absence ab where lt.id_talent = ab.id_talent 
+and ab.period_start between lt.effective_start_date and lt.effective_end_date and ab.periode = %s and ab.tahun =%s 
+order by lt.nama
+''',(period,tahun))
+            else:
+                cursor.execute('''SELECT  lt.nama,lt.grade,ab.periode,year(ab.period_start) tahun ,jumlah_main
+FROM list_talent lt,absence ab where lt.id_talent = ab.id_talent 
+and ab.period_start between lt.effective_start_date and lt.effective_end_date and ab.periode = %s order by lt.nama''',(period,))
+
+            grade = cursor.fetchall()
+           
+        connection.close()     
+        return grade
     except Exception as e:
         print(f"Error {e}")

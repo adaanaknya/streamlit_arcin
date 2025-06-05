@@ -63,3 +63,21 @@ with st.form(key="input absence"):
         else:
             st.warning("isis semua field")
  
+ 
+with st.form(key="History"):
+    period = st.selectbox(
+    "Periode Bulan",
+    ("Januari", "Februari", "Maret","April","Mei","Juni","Juli","Agustus","September","Oktober","November","Desember"),
+    )
+
+    tahun = st.text_input("Tahun")
+    columns = ["Nama", "Grade", "Periode","Tahun","Jumlah Main"]
+    submit = st.form_submit_button("Cari") 
+    if submit:
+        data = db.history_absence(period,tahun)
+        if period:
+            st.dataframe(pd.DataFrame(data,columns=columns),hide_index=True) 
+        else:
+            st.dataframe(pd.DataFrame(data,columns=columns),hide_index=True)   
+
+    
