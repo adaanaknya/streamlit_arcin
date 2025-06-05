@@ -33,6 +33,7 @@ st.write("Saldo Kas : " +str(cur))
 with  col1:
     with st.form(key="Kas Masuk"):
         st.header("Kas Masuk")
+        id = str(creation_date_format)
         nama = st.text_input("Nama")
         keterangan = st.text_input("Keterangan")
         harga =  st.number_input("Harga / Nominal" ,step=1,format="%d")
@@ -41,13 +42,14 @@ with  col1:
         submit = st.form_submit_button("Input") 
         if submit:
             if nama and keterangan and harga and jumlah and tanggal:
-                db.input_kas_masuk(creation_date_format,nama,keterangan,harga,jumlah,tanggal)
+                db.input_kas_masuk(id,nama,keterangan,harga,jumlah,tanggal)
             else:
                 st.warning("Isi semua field!")
         
 with col2:
     with st.form(key="Kas Keluar"):
         st.header("Kas Keluar")
+        id = str(creation_date_format)
         nama = st.text_input("Nama")
         keterangan = st.text_input("Keterangan")
         harga =  st.number_input("Harga / Nominal" ,step=1,format="%d")
@@ -56,7 +58,7 @@ with col2:
         submit = st.form_submit_button("Input") 
         if submit:
             if nama and keterangan and harga and jumlah and tanggal:
-                db.input_kas_keluar(creation_date_format,nama,keterangan,harga,jumlah,tanggal)
+                db.input_kas_keluar(id,nama,keterangan,harga,jumlah,tanggal)
             else:
                 st.warning("Isi semua field!")
                 
