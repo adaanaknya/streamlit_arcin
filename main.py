@@ -6,10 +6,11 @@ import db
  
 
   
-
+st.set_page_config(layout="wide")
 def main():
-  st.header("Marching Band Dunia Fantasi")
  
+  st.header("Marching Band Dunia Fantasi")
+  st.image("stufan.jpg",caption="Stufan Dcorps")
   
 
         

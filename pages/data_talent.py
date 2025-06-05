@@ -10,7 +10,7 @@ sysdate = creation_dates.strftime('%Y-%m-%d %H:%M:%S')
 effective_start= creation_dates.strftime('%Y-%m-%d')
 effective_end_dates = "4712-12-31"
 effective_end_date = datetime.datetime.strptime(effective_end_dates, "%Y-%m-%d").date()
-
+st.set_page_config(layout="wide")
  
 with st.form( key="form_talent"):
         st.header("Input Data Talent")

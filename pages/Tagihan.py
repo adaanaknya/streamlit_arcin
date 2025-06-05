@@ -3,7 +3,7 @@ import pandas as pd
 import datetime
 import db
  
- 
+st.set_page_config(layout="wide")
 with st.form(key="Tagihan Per Period"):
     st.header("Tagihan Per Period") 
     

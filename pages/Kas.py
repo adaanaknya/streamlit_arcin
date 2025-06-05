@@ -2,7 +2,8 @@ import streamlit as st
 import pandas as pd
 import datetime
 import db
- 
+
+st.set_page_config(layout="wide")
 bulan_mapping = {
     "Januari": "01",
     "Februari": "02",
