@@ -355,7 +355,7 @@ def cur_amount():
         with connection.cursor() as cursor:
             # cursor = connection.cursor()
            
-            cursor.execute('''select format(km.total - kk.total,0) current_amount from (select sum(total) total from (select (harga * jumlah) total from kas_masuk) km) km,
+            cursor.execute('''select format(ifnull(km.total,0) - ifnull(kk.total,0),0) current_amount from (select sum(total) total from (select (harga * jumlah) total from kas_masuk) km) km,
 (select sum(total) total from (select (harga * jumlah) total from kas_keluar) kk) kk ''')
             cur = cursor.fetchall()[0]
            

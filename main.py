@@ -4,11 +4,12 @@ import pandas as pd
 import datetime
 import db
  
+ 
 
   
-st.set_page_config(layout="wide")
+
 def main():
- 
+  st.set_page_config(page_title="Home")
   st.header("Marching Band Dunia Fantasi")
   st.image("stufan.jpg",caption="Stufan Dcorps")
   
