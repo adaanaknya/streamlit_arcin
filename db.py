@@ -395,7 +395,9 @@ def delete_absence(id):
         connection = get_connection() 
         with connection.cursor() as cursor:
             # cursor= connection.cursor
-            cursor.execute("delete from absence   where id_absence in %s ",(tuple(id),))
+            placeholders = ','.join(['%s'] * len(id))
+            query = f"delete from absence   where id_absence in ({placeholders})"
+            cursor.execute(query,id)
             connection.commit()
             st.success("Delete Berhasil")
         connection.close() 

@@ -90,7 +90,7 @@ with st.form(key="History"):
 edited_df = st.data_editor(
         df,
         column_config={
-            "Pilih": st.column_config.CheckboxColumn("Pilih [Edit/Delete]")
+            "Pilih": st.column_config.CheckboxColumn("Pilih [Delete]")
         },
         use_container_width=True,
         hide_index=True)
@@ -101,11 +101,10 @@ id_absence = selected["ID"].tolist()
 abs =id_absence
             
     
-st.write(abs)
+# st.write(abs)
 delete = st.button("Hapus")
 if delete:
     db.delete_absence(id_absence)
-             
-     
+    st.rerun()         
 
     
