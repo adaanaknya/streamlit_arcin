@@ -184,13 +184,13 @@ def load_grade(sysdate,id):
         
         
 
-def input_absence(id,  grade, jumlah_main, creation_date,period,tagihan, effective_start_date,effective_end_date):
+def input_absence(id,  grade, jumlah_main, creation_date,period,tagihan, effective_start_date,effective_end_date,id_absence):
     
     try:
         connection = get_connection() 
         with connection.cursor() as cursor:
         # cursor = connection.cursor()
-            insert = cursor.execute("INSERT INTO absence (id_talent, grade, jumlah_main, creation_date, periode,tagihan,period_start,period_end) VALUES (%s,%s,%s, %s, %s, %s, %s, %s)",(id,  grade, jumlah_main, creation_date,period,tagihan, effective_start_date,effective_end_date))
+            insert = cursor.execute("INSERT INTO absence (id_absence,id_talent, grade, jumlah_main, creation_date, periode,tagihan,period_start,period_end) VALUES (%s,%s,%s, %s, %s, %s, %s, %s,%s)",(id_absence,id,  grade, jumlah_main, creation_date,period,tagihan, effective_start_date,effective_end_date))
             connection.commit()
         
         connection.close() 
@@ -264,9 +264,9 @@ def history_pembayaran(nama,date_from,date_to):
         with connection.cursor() as cursor:
             # cursor = connection.cursor()
             if nama:
-                cursor.execute("SELECT  lt.nama ,py.keterangan,format(py.nominal,0) nominal,py.effective_date  FROM list_talent lt , payroll py  where  %s between lt.effective_start_date and lt.effective_end_date and py.id_talent = lt.id_talent  and   lt.nama like %s  and py.effective_date between %s and %s ",(sysdate,'%'+nama+'%',date_from,date_to))
+                cursor.execute("SELECT  lt.nama ,py.keterangan,format(py.nominal,0) nominal,py.effective_date  FROM list_talent lt , payroll py  where  %s between lt.effective_start_date and lt.effective_end_date and py.id_talent = lt.id_talent  and   lt.nama like %s  and py.effective_date between %s and %s py.effective_date ",(sysdate,'%'+nama+'%',date_from,date_to))
             else:
-                cursor.execute("SELECT  lt.nama ,py.keterangan,format(py.nominal,0) nominal,py.effective_date  FROM list_talent lt , payroll py  where  %s between lt.effective_start_date and lt.effective_end_date and py.id_talent = lt.id_talent and  py.effective_date between %s and %s  ",(sysdate,date_from,date_to))
+                cursor.execute("SELECT  lt.nama ,py.keterangan,format(py.nominal,0) nominal,py.effective_date  FROM list_talent lt , payroll py  where  %s between lt.effective_start_date and lt.effective_end_date and py.id_talent = lt.id_talent and  py.effective_date between %s and %s  py.effective_date  ",(sysdate,date_from,date_to))
 
             grade = cursor.fetchall()
         
@@ -372,13 +372,13 @@ def history_absence(period,tahun):
         with connection.cursor() as cursor:
             # cursor = connection.cursor()
             if tahun:
-                cursor.execute('''SELECT  lt.nama,lt.grade,ab.periode,year(ab.period_start) tahun ,jumlah_main
+                cursor.execute('''SELECT  ab.id_absence,lt.nama,lt.grade,ab.periode,year(ab.period_start) tahun ,jumlah_main
 FROM list_talent lt,absence ab where lt.id_talent = ab.id_talent 
 and ab.period_start between lt.effective_start_date and lt.effective_end_date and ab.periode = %s and ab.tahun =%s 
 order by lt.nama
 ''',(period,tahun))
             else:
-                cursor.execute('''SELECT  lt.nama,lt.grade,ab.periode,year(ab.period_start) tahun ,jumlah_main
+                cursor.execute('''SELECT  ab.id_absence,lt.nama,lt.grade,ab.periode,year(ab.period_start) tahun ,jumlah_main
 FROM list_talent lt,absence ab where lt.id_talent = ab.id_talent 
 and ab.period_start between lt.effective_start_date and lt.effective_end_date and ab.periode = %s order by lt.nama''',(period,))
 
@@ -388,3 +388,17 @@ and ab.period_start between lt.effective_start_date and lt.effective_end_date an
         return grade
     except Exception as e:
         print(f"Error {e}")
+        
+        
+def delete_absence(id):
+    try:
+        connection = get_connection() 
+        with connection.cursor() as cursor:
+            # cursor= connection.cursor
+            cursor.execute("delete from absence   where id_absence in %s ",(tuple(id),))
+            connection.commit()
+            st.success("Delete Berhasil")
+        connection.close() 
+    except Exception as e:
+        print(f"Error {e}")
+        
