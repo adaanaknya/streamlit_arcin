@@ -2,8 +2,6 @@ import streamlit as st
 import mysql.connector
 import datetime
 from mysql.connector import Error
-import streamlit
-
 
 # Second backup
  hostname = "0-igg.h.filess.io"
