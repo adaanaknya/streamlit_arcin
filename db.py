@@ -209,11 +209,11 @@ def tagihan_period(nama,period,tahun):
         with connection.cursor() as cursor:
             # cursor = connection.cursor()
             if nama:
-                cursor.execute("SELECT  lt.nama,lt.grade,ab.periode,year(ab.period_start) tahun ,FORMAT(sum(ab.tagihan), 0) tagihan  FROM list_talent lt,absence ab where lt.id_talent = ab.id_talent and ab.period_start between lt.effective_start_date and lt.effective_end_date  and lt.nama like %s and ab.periode = %s group by lt.nama,lt.grade,ab.periode,year(ab.period_start)" ,('%'+nama+'%',period))
+                cursor.execute("SELECT  lt.nama,lt.grade,ab.periode,year(ab.period_start) tahun ,FORMAT(sum(ab.tagihan), 0) tagihan  FROM list_talent lt,absence ab where lt.id_talent = ab.id_talent and ab.period_start between  lt.effective_start_date and  lt.effective_end_date  and lt.nama like %s and ab.periode = %s group by lt.nama,lt.grade,ab.periode,year(ab.period_start)" ,('%'+nama+'%',period))
             elif tahun: 
-                 cursor.execute("SELECT  lt.nama,lt.grade,ab.periode,year(ab.period_start) tahun ,FORMAT(sum(ab.tagihan), 0) tagihan  FROM list_talent lt,absence ab where lt.id_talent = ab.id_talent and ab.period_start between lt.effective_start_date and lt.effective_end_date  and year(ab.period_start) = %s and ab.periode = %s group by lt.nama,lt.grade,ab.periode,year(ab.period_start)",(tahun,period))
+                 cursor.execute("SELECT  lt.nama,lt.grade,ab.periode,year(ab.period_start) tahun ,FORMAT(sum(ab.tagihan), 0) tagihan  FROM list_talent lt,absence ab where lt.id_talent = ab.id_talent and ab.period_start between  lt.effective_start_date and  lt.effective_end_date  and year(ab.period_start) = %s and ab.periode = %s group by lt.nama,lt.grade,ab.periode,year(ab.period_start)",(tahun,period))
             else:
-                cursor.execute("SELECT  lt.nama,lt.grade,ab.periode,year(ab.period_start) tahun ,FORMAT(sum(ab.tagihan), 0) tagihan  FROM list_talent lt,absence ab where lt.id_talent = ab.id_talent and ab.period_start between lt.effective_start_date and lt.effective_end_date and ab.periode = %s group by lt.nama,lt.grade,ab.periode,year(ab.period_start)",(period,))
+                cursor.execute("SELECT  lt.nama,lt.grade,ab.periode,year(ab.period_start) tahun ,FORMAT(sum(ab.tagihan), 0) tagihan  FROM list_talent lt,absence ab where lt.id_talent = ab.id_talent and ab.period_start between  lt.effective_start_date and  lt.effective_end_date  and ab.periode = %s group by lt.nama,lt.grade,ab.periode,year(ab.period_start)",(period,))
         
             grade = cursor.fetchall()
         
