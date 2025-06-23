@@ -379,7 +379,7 @@ def history_absence(period,tahun):
             if tahun:
                 cursor.execute('''SELECT  ab.id_absence,lt.nama,lt.grade,ab.periode,year(ab.period_start) tahun ,jumlah_main
 FROM list_talent lt,absence ab where lt.id_talent = ab.id_talent 
-and ab.period_start between lt.effective_start_date and lt.effective_end_date and ab.periode = %s and ab.tahun =%s 
+and ab.period_start between lt.effective_start_date and lt.effective_end_date and ab.periode = %s and year(ab.period_start) =%s 
 order by lt.nama
 ''',(period,tahun))
             else:
