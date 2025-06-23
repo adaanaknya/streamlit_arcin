@@ -18,7 +18,7 @@ import streamlit
 
 # Primary
 hostname = "mysql.db.mdbgo.com"
-database = "mysql8"
+database = "adaanaknya_stufan"
 port = "3306"
 username = "adaanaknya_stufanorg"
 password = "Terserahluu123."
