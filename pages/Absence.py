@@ -31,7 +31,7 @@ with st.form(key="input absence"):
     users_dict = db.lov_nama(sysdate)
     nama_talent = st.selectbox("Pilih Nama:", list(users_dict.keys()))
     id_talent = users_dict[nama_talent]  
-    grades = db.load_grade(sysdate,id_talent)
+    
     # grade = st.text_input("grade",value=grades)
     period = st.selectbox(
     "Periode Bulan",
@@ -40,13 +40,7 @@ with st.form(key="input absence"):
     tahun = st.text_input("Tahun")
     jumlah_main =  st.number_input("Jumlah Main" ,step=1,format="%d")
     submit = st.form_submit_button("Submit")
-    tagihan =0
-    if grades =="C":
-        tagihan = jumlah_main * 10000
-    elif grades =="B":
-        tagihan = jumlah_main * 5000
-    elif grades =="A":
-        tagihan = jumlah_main * 0
+  
         
     if submit:
         if period in bulan_mapping and tahun:
@@ -57,6 +51,14 @@ with st.form(key="input absence"):
             start_date = datetime.datetime(tahuns, bulan_start, 26)
             end_date = datetime.datetime(tahuns, bulan_end, 25)
             if tahun and period and jumlah_main:
+                grades = db.load_grade(start_date,id_talent)
+                tagihan =0
+                if grades =="C":
+                    tagihan = jumlah_main * 10000
+                elif grades =="B":
+                    tagihan = jumlah_main * 5000
+                elif grades =="A":
+                    tagihan = jumlah_main * 0
                 db.input_absence(id_talent,grades,jumlah_main,sysdate,period,tagihan,start_date,end_date,id_abs)
                 st.success("Berhasil di Input!")
             else:
