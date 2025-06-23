@@ -1,23 +1,27 @@
 import streamlit as st
+
+
 import mysql.connector
 import datetime
 from mysql.connector import Error
+import streamlit
+
 
 # Second backup
-hostname = "0-igg.h.filess.io"
-database = "storage_costtownon"
-port = "61002"
-username = "storage_costtownon"
-password = "c06342c974f010f014d095af8ebf435cbfd5beca"
+# hostname = "0-igg.h.filess.io"
+# database = "storage_costtownon"
+# port = "61002"
+# username = "storage_costtownon"
+# password = "c06342c974f010f014d095af8ebf435cbfd5beca"
 
 
 
 # Primary
-#hostname = "mysql.db.mdbgo.com"
-#database = "mysql8"
-#port = "3306"
-#username = "adaanaknya_stufanorg"
-#password = "Terserahluu123."
+hostname = "mysql.db.mdbgo.com"
+database = "mysql8"
+port = "3306"
+username = "adaanaknya_stufanorg"
+password = "Terserahluu123."
 
 # hostname = "sql.freedb.tech"
 # database = "freedb_stufandb"
