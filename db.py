@@ -248,13 +248,14 @@ left join
         print(f"Error {e}")
         
         
-def input_pembayaran(id_talent,keterangan,nominal,eff_date):
+def input_pembayaran(id_pembayaran,id_talent,keterangan,sysdate,nominal,eff_date):
     
     try:
         connection = get_connection() 
         with connection.cursor() as cursor:
         # cursor = connection.cursor()
-            insert = cursor.execute("INSERT INTO payroll (id_pembayaran, id_talent, keterangan, creation_date, nominal,effective_date) VALUES (%s,%s,%s, %s, %s,%s)",(creation_date_format,  id_talent, keterangan, sysdate,nominal,eff_date))
+          
+            insert = cursor.execute("INSERT INTO payroll (id_pembayaran, id_talent, keterangan, creation_date, nominal,effective_date) VALUES (%s,%s,%s, %s, %s,%s)",(id_pembayaran,  id_talent, keterangan, sysdate,nominal,eff_date))
             connection.commit()
         
         

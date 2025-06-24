@@ -23,8 +23,9 @@ with st.form(key="Pembayaran"):
     submit = st.form_submit_button("Input")
     if submit:
         if nama_talent and keterangan and nominal and tanggal:
-            db.input_pembayaran(id_talent,keterangan,nominal,tanggal)
+            db.input_pembayaran(creation_date_format,id_talent,keterangan,sysdate,nominal,tanggal)
             st.success("Data Behasil di input")
+            
         else:
             st.warning("Field Harus Di isi semua")
             
