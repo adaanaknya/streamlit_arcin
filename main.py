@@ -6,9 +6,9 @@ import db
  
   
 def main():
-  user = st.experimental_user
+  user = st.user
   if user:
-    st.write("Email user login:", user.email)
+    st.write("Email user login:"+ user )
   else:
     st.write("None")
   st.header("Marching Band Dunia Fantasi")
