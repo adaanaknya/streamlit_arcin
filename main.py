@@ -6,7 +6,9 @@ import db
  
   
 def main():
-  
+  user = st.experimental_user
+  if user:
+    st.write("Email user login:", user.email)
   st.header("Marching Band Dunia Fantasi")
   st.image("stufan.jpg",caption="Stufan Dcorps")
  
