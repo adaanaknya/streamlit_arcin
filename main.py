@@ -9,6 +9,8 @@ def main():
   user = st.experimental_user
   if user:
     st.write("Email user login:", user.email)
+  else:
+    st.write("None")
   st.header("Marching Band Dunia Fantasi")
   st.image("stufan.jpg",caption="Stufan Dcorps")
  
