@@ -11,7 +11,7 @@ def main():
   if user is None:
       st.warning("User belum terdeteksi. Coba login dulu ke https://streamlit.io/cloud lalu akses ulang app.")
   else:
-      st.success(f"Login sebagai: {user.name} ({user.email})")
+      st.success(f"Login sebagai: {user} ")
       st.write(user)
   st.header("Marching Band Dunia Fantasi")
   st.image("stufan.jpg",caption="Stufan Dcorps")
