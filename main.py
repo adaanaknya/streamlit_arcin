@@ -4,7 +4,7 @@ import pandas as pd
 import datetime
 import db
  
-user = st.user.email
+user = st.experimental_user.values
 def main():
 
 
