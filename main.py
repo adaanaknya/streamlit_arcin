@@ -4,13 +4,15 @@ import pandas as pd
 import datetime
 import db
  
-  
+user = st.experimental_user
 def main():
-  user = st.user
-  if user:
-    st.write("Email user login:"+ user )
+
+
+  if user is None:
+      st.warning("User belum terdeteksi. Coba login dulu ke https://streamlit.io/cloud lalu akses ulang app.")
   else:
-    st.write("None")
+      st.success(f"Login sebagai: {user.name} ({user.email})")
+      st.write(user)
   st.header("Marching Band Dunia Fantasi")
   st.image("stufan.jpg",caption="Stufan Dcorps")
  
