@@ -88,13 +88,13 @@ with st.form(key="Edit"):
             db.input_talent(input1,input2,input3,sysdate,effective_start_date,effective_end_dates)      
         else:
             st.warning("Pilih 1!")  
-    elif correct:
+    if correct:
         if  input1 != "":
             db.correct_talent(input1,input3)
             st.write("Correct Berhasil ID "+ input1)
         else:
             st.warning("Pilih 1!")  
-    elif delete:
+    if delete:
          if  input1 != "":
             db.delete_talent(input1)
             st.write("Delete Berhasil ID "+ input1)

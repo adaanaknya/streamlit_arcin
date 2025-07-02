@@ -126,7 +126,7 @@ def correct_talent(id,grade):
         connection = get_connection()
         with connection.cursor() as cursor:
             # cursor= connection.cursor
-            cursor.execute("update list_talent  set grade=%s where id_talent = %s ",(id,grade))
+            cursor.execute("update list_talent  set grade=%s where id_talent = %s ",(grade,id))
             
             connection.commit()
             st.success("Correct Berhasil")
