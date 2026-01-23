@@ -47,7 +47,12 @@ with st.form(key="input absence"):
             id_abs = ("ABS"+str(creation_date_format))
             tahuns = int(tahun)
             bulan_start = bulan_mapping[period]
-            bulan_end = bulan_mapping[period]+ 1
+            if bulan_start == 12:
+                bulan_end = 1
+                tahun_end = tahuns + 1
+            else:
+                bulan_end = bulan_start + 1
+                tahun_end = tahuns
             start_date = datetime.datetime(tahuns, bulan_start, 26)
             end_date = datetime.datetime(tahuns, bulan_end, 25)
             if tahun and period and jumlah_main:
